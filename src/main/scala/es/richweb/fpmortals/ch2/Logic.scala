@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit
 
 import scalaz._
 import Scalaz._
+import es.richweb.fpmortals.ch2
 
 import scala.concurrent.duration._
 
@@ -20,6 +21,14 @@ final case class DynAgents[F[_]](D: Drone[F], M: Machines[F])(implicit F: Monad[
     ma <- M.getAlive
     mt <- M.getTime
   } yield Worldview(db, da, mn, ma, Map.empty, mt)
+
+  def initialP: F[Worldview] = ^^^^(D.getBacklog, D.getAgents, M.getManaged, M.getAlive, M.getTime) {
+    case (db, da, mn, ma, mt) => Worldview(db, da, mn, ma, Map.empty, mt)
+  }
+
+  def initialPA: F[Worldview] = (D.getBacklog |@| D.getAgents |@| M.getManaged |@| M.getAlive |@| M.getTime) {
+    case (db, da, mn, ma, mt) => Worldview(db, da, mn, ma, Map.empty, mt)
+  }
 
   def update(old: Worldview): F[Worldview] = for {
     snap <- initial
@@ -63,9 +72,25 @@ final case class DynAgents[F[_]](D: Drone[F], M: Machines[F])(implicit F: Monad[
     case Stale(nodes) => nodes.foldLeftM(world) { (world, n) =>
       for {
         _ <- M.stop(n)
-        update <- world.copy(pending = world.pending + (n -> world.time))
+        update = world.copy(pending = world.pending + (n -> world.time))
       } yield update
     }
+
+    case _ => world.pure[F]
+
+  }
+
+  def actT(world: Worldview): F[Worldview] = world match {
+    case NeedsAgent(node) => for {
+      _ <- M.start(node)
+      update = world.copy(pending = Map(node -> world.time))
+    } yield update
+
+    case Stale(nodes) => for {
+      stopped <- nodes.traverse(M.stop)
+      updates <- stopped.map(_ -> world.time).toList.toMap
+      update <- world.copy(pending = world.pending ++ updates)
+    } yield update
 
     case _ => world.pure[F]
 
