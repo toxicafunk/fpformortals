@@ -88,8 +88,8 @@ final case class DynAgents[F[_]](D: Drone[F], M: Machines[F])(implicit F: Monad[
 
     case Stale(nodes) => for {
       stopped <- nodes.traverse(M.stop)
-      updates <- stopped.map(_ -> world.time).toList.toMap
-      update <- world.copy(pending = world.pending ++ updates)
+      updates = stopped.map(_ -> world.time).toList.toMap
+      update = world.copy(pending = world.pending ++ updates)
     } yield update
 
     case _ => world.pure[F]
