@@ -18,6 +18,19 @@ trait Numeric[T] extends Ordering[T] {
 
 object Numeric {
   def apply[T](implicit numeric: Numeric[T]): Numeric[T] = numeric
+
+  object ops {
+    implicit class NumericOps[T](t: T)(implicit N: Numeric[T]) {
+      def +(o: T): T = N.plus(t, o)
+      def *(o: T): T = N.times(t, o)
+      def neg: T = N.negate(t)
+      def abs: T = N.abs(t)
+
+      //duplicated from Ordering.ops
+      def <(o: T): Boolean = N.lt(t, o)
+      def >(o: T): Boolean = N.gt(t, o)
+    }
+  }
 }
 
 object polymorphicfuncs {
@@ -40,4 +53,7 @@ object polymorphicfuncs {
     import N._
     times(negate(abs(t)), t)
   }
+
+  import Numeric.ops._
+  def signOfTheTimes3[T: Numeric](t: T): T = (t.abs).neg * t
 }
