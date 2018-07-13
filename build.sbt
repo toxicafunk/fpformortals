@@ -3,6 +3,7 @@ name := "fpformortals"
 version := "0.1"
 
 scalaVersion := "2.12.6"
+scalaVersion in ThisBuild := "2.12.6"
 
 scalacOptions in ThisBuild ++= Seq(
   "-language:_",
