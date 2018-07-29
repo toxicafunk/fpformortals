@@ -23,7 +23,7 @@ object Numeric {
     implicit class NumericOps[T](t: T)(implicit N: Numeric[T]) {
       def +(o: T): T = N.plus(t, o)
       def *(o: T): T = N.times(t, o)
-      def neg: T = N.negate(t)
+      def unary_- = N.negate(t)
       def abs: T = N.abs(t)
 
       //duplicated from Ordering.ops
@@ -55,5 +55,5 @@ object polymorphicfuncs {
   }
 
   import Numeric.ops._
-  def signOfTheTimes3[T: Numeric](t: T): T = (t.abs).neg * t
+  def signOfTheTimes3[T: Numeric](t: T): T = -(t.abs) * t
 }
