@@ -7,15 +7,6 @@ import scala.concurrent.duration._
 
 import scala.language.higherKinds
 
-trait Functor[F[_]] {
-  def map[A,B](fa: F[A])(f: A => B): F[B]
-}
-
-trait Monad[F[_]] extends Functor[F] {
-  def pure[A](a: A): F[A]
-  def flatMap[A,B](fa: F[A])(f: A => F[B]): F[B]
-}
-
 object Intro {
   val fut: Future[Int] = Future(1)
 
@@ -26,8 +17,18 @@ object Intro {
       () => a
   }
 
-  implicit val ioMonad: Monad[IO] =
-    new Monad[IO] {
+  trait Functor[F[_]] {
+    def map[A,B](fa: F[A])(f: A => B): F[B]
+  }
+
+  trait Monad[F[_]] extends Functor[F] {
+    def pure[A](a: A): F[A]
+    def flatMap[A,B](fa: F[A])(f: A => F[B]): F[B]
+  }
+
+  object Monad {
+    implicit val ioMonad: Monad[IO] =
+      new Monad[IO] {
         def pure[A](a: A): IO[A] = IO(a)
 
         def map[A,B](io: IO[A])(f: A => B): IO[B] =
@@ -36,6 +37,9 @@ object Intro {
         def flatMap[A,B](io: IO[A])(f: A => IO[B]): IO[B] =
           f(io())
       }
+
+    //def map[A,B](a: A)(f: A => B)(implicit M: Monad[IO]) = M.map(IO(a))(f)
+  }
 
   def print(message: String): IO[Unit] =
     () => println(message)
