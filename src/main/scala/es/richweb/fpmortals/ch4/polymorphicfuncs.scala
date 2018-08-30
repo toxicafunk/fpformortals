@@ -34,6 +34,20 @@ object Numeric {
 }
 
 object polymorphicfuncs {
+
+  implicit val NumericDouble: Numeric[Double] = new Numeric[Double] {
+    def plus(x: Double, y: Double): Double = x + y
+    def times(x: Double, y: Double): Double = x * y
+    def negate(x: Double): Double = -x
+    def zero: Double = 0.0
+    def compare(x: Double, y: Double): Int = java.lang.Double.compare(x, y)
+
+    //optimised
+    override def lt(x: Double, y: Double): Boolean = x < y
+    override def gt(x: Double, y: Double): Boolean = x > y
+    override def abs(x: Double): Double = java.lang.Math.abs(x)
+  }
+
   def signOfTheTimes[T](t: T)(implicit N: Numeric[T]): T = {
     import N._
     times(negate(abs(t)), t)

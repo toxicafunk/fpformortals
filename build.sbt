@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
-libraryDependencies += "eu.timepit" %% "refined-scalaz" % "0.8.7"
+libraryDependencies += "eu.timepit" %% "refined-scalaz" % "0.9.2"
 
 resolvers += Resolver.sonatypeRepo("releases")
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.7")
