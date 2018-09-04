@@ -12,7 +12,7 @@ trait Consumer[-T] {
 object Variance {
   val members: List[Member] = List(Member(1, "Jan"), Member(2, "Eric"))
 
-  def consumer: Consumer[User] = (value: User) => print(s"User: ${value.name}\n")
+  def consumer: Consumer[User] = (value: User) => print(s"User: ${value.id}\n")
 
   def main(args: Array[String]): Unit = {
     members.foreach(consumer.consume)

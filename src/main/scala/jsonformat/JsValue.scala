@@ -19,6 +19,6 @@ final case class JsInteger(value: Long)                     extends JsValue
 
 object JsValue {
   implicit class JsValueOps(j: JsValue) {
-    def getAs[A: JsDecoder](key: String): String \/ A = ???
+    def getAs[A: JsDecoder](key: String): String \/ A = JsDecoder[A].fromJson(j)
   }
 }
